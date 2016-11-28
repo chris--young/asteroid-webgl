@@ -1,60 +1,29 @@
 'use strict'
 
-const flip = () => Math.random() < 0.5;
-const between = (min, max) => Math.random() * (max - min + 1) + min;
-const random = abs => flip() ? Math.random() * abs : Math.random() * -abs;
+const ASTEROID_MAX_SPEED = 0.01;
 
-function asteroid() {
-  let x = random(physics.ratio);
-  let y = random(1);
-  let s = 1;
-  let i = between(0, 2) | 0;
+class Asteroid extends Body {
+  constructor(wireframes, physics) {
+    let i = between(0, wireframes.length - 1) | 0;
+    let x = random(physics.ratio);
+    let y = random(1);
 
-  let model = LA.Matrix(Array)(3)([
-    [s, 0, x],
-    [0, s, y],
-    [0, 0, 1]
-  ]);
+    const model = LA.Matrix(Array)(3)([
+      [1, 0, x],
+      [0, 1, y],
+      [0, 0, 1]
+    ]);
 
-  let wireframe = Object.assign({}, assets.wireframes.asteroids[i]);
+    x = random(ASTEROID_MAX_SPEED);
+    y = random(ASTEROID_MAX_SPEED);
 
-  return {
-    model: model,
-    velocity: LA.Matrix(Array)(3)(LA.IDENTITY),
-    wireframe: wireframe
-  };
-}
+    const velocity = LA.Matrix(Array)(3)([
+      [1, 0, x],
+      [0, 1, y],
+      [0, 0, 1]
+    ]);
 
-const TIMEOUT = 3000;
-
-function place() {
-  const start = Date.now();
-
-  let a = asteroid();
-  let look = true;
-
-  while (look) {
-    if (Date.now() - start > TIMEOUT)
-      break;
-
-    let collision = false;
-    let index = 0;
-
-    while (!collision && index < bodies.length) {
-      let vec = Physics.collision(a, bodies[index++]);
-      if (vec) {
-        console.log({ vec });
-        //a.model[0][2] += Math.cos(angle);
-        //a.model[1][2] += Math.sin(angle);
-        a.model = LA.multiply(vec, a.model);
-        collision = true;
-      }
-    }
-
-    if (!collision)
-      look = false;
+    super(model, velocity, wireframes[i]);
   }
-
-  return a;
 }
 

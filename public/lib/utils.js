@@ -2,6 +2,10 @@
 
 const flatten = array => array.reduce((a, b) => a.concat(b));
 
+const flip = () => Math.random() < 0.5;
+const between = (min, max) => Math.random() * (max - min + 1) + min;
+const random = abs => flip() ? Math.random() * abs : Math.random() * -abs;
+
 function scale(x, y) {
   return LA.Matrix(Array)(3)([
     [x, 0, 0],

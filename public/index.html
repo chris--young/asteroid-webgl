@@ -17,12 +17,13 @@
     </noscript>
 
     <canvas id="game"></canvas>
-    <canvas id="debug"></canvas>
+    <canvas id="text"></canvas>
 
     <div>
       <button id="pause">Pause</button>
       <button id="mute">Mute</button>
       <button id="fullscreen">Fullscreen</button>
+      <label>debug</label><input id="debug" type="checkbox" checked>
     </div>
 
     <script src="lib/la.js"></script>
@@ -31,6 +32,10 @@
     <script src="lib/audio.js"></script>
     <script src="lib/physics.js"></script>
     <script src="lib/network.js"></script>
+
+    <script src="level/asteroid.js"></script>
+    <script src="level/alien.js"></script>
+    <script src="level/player.js"></script>
 
     <script src="main.js"></script>
 

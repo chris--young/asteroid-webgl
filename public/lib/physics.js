@@ -1,16 +1,23 @@
 'use strict'
 
 const _360 = Math.PI * 2;
-const SPEED = 0.005;
-const MAX_SPEED = 0.03;
+const SPEED = 0.01;
 const ROTATION = _360 / 360 * 5;
-const DRAG = -0.00001;
-const RELOAD = 1000;
+const DRAG = -0.00005;
+const RELOAD = 1001;
+
+class Body {
+  constructor(model, velocity, wireframe) {
+    this.model = model;
+    this.velocity = velocity;
+    this.wireframe = wireframe;
+  }
+}
 
 class Physics {
   constructor(canvas) {
     this.canvas = canvas;
-    this.input = {};
+    this.input = { timestamp: Date.now() };
 
     this.resize();
 
@@ -27,15 +34,17 @@ class Physics {
   }
 
   update(body) {
-    if (body.velocity[1][2] > 0)
-      body.velocity = LA.multiply(translate(0, DRAG), body.velocity);
-    else if (body.velocity[1][2] < 0)
-      body.velocity = LA.multiply(translate(0, -DRAG), body.velocity);
+    if (body instanceof Player) {
+      if (body.velocity[1][2] > 0)
+        body.velocity = LA.multiply(translate(0, DRAG), body.velocity);
+      else if (body.velocity[1][2] < 0)
+        body.velocity = LA.multiply(translate(0, -DRAG), body.velocity);
 
-    if (body.velocity[0][2] > 0)
-      body.velocity = LA.multiply(translate(DRAG, 0), body.velocity);
-    else if (body.velocity[0][2] < 0)
-      body.velocity = LA.multiply(translate(-DRAG, 0), body.velocity);
+      if (body.velocity[0][2] > 0)
+        body.velocity = LA.multiply(translate(DRAG, 0), body.velocity);
+      else if (body.velocity[0][2] < 0)
+        body.velocity = LA.multiply(translate(-DRAG, 0), body.velocity);
+    }
 
     if (body.model[1][2] - body.wireframe.bounds > 1)
       body.model = LA.multiply(translate(0, -2), body.model);
@@ -73,7 +82,7 @@ class Physics {
       let x = Math.cos(body.rotation) * SPEED;
       let y = Math.sin(body.rotation) * SPEED;
 
-      body.velocity = translate(x, y);
+      body.velocity = translate(x, y); // LA.multiply(translate(x, y), body.velocity);
     }
   }
 
@@ -88,51 +97,17 @@ class Physics {
     if (distance > bounds)
       return false;
 
-    function collide(body1, body2) {
-      let u1 = body1.velocity[0][2];
-      let u2 = body2.velocity[0][2];
+    const x1 = body1.velocity[0][2];
+    const y1 = body1.velocity[1][2];
 
-      let m1 = 1;
-      let m2 = 1;
+    const x2 = body2.velocity[0][2];
+    const y2 = body2.velocity[1][2];
 
-      let v1 = ((u1 * (m1 - m2)) + (2 * m2 * u2)) / (m1 + m2); 
-      let v2 = ((u2 * (m1 - m2)) + (2 * m2 * u1)) / (m1 + m2);
+    body1.velocity[0][2] = x2;
+    body1.velocity[1][2] = y2;
 
-      body1.velocity[0][2] = v1;
-      body2.velocity[0][2] = v2;
-
-      let x1 = body1.model[0][2];
-      let y1 = body1.model[1][2];
-      let x2 = body2.model[0][2];
-      let y2 = body2.model[1][2];
-
-      let angle = Math.atan2(y1 - y2, x1, - x2);
-
-      let d1 = body1.rotation;
-      let d2 = 0;
-
-      console.log({ d1, d2 });
-
-      let v1x = u1 * Math.cos(d1 - a);
-      let v1y = u1 * Math.sin(d1 - a);
-      let v2x = u2 * Math.cos(d2 - a);
-      let v2y = u2 * Math.sin(d2 - a);
-
-      console.log({ v1x, v1y, v2x, v2y });
-
-      let f1x = ((v1x * (m1 - m2)) + (2 * m2 * v2x)) / (m1 + m2); 
-      let f2x = ((v2x * (m1 - m2)) + (2 * m2 * v1x)) / (m1 + m2); 
-
-      v1 = Math.sqrt((Math.pow(f1x, 2) * Math.pow(f1x, 2)) + (v1y * Math.pow(v1y, 2)));
-      v2 = Math.sqrt((Math.pow(f2x, 2) * Math.pow(f2x, 2)) + (v2y * Math.pow(v2y, 2)));
-
-      console.log({ f1x, f2x, v1, v2 });
-    }
-
-    collide(body1, body2);
-
-    body1.model = LA.multiply(body1.model, body1.velocity);
-    body2.model = LA.multiply(body2.model, body2.velocity);
+    body2.velocity[0][2] = x1;
+    body2.velocity[1][2] = y1;
 
     return true;
   }

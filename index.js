@@ -13,7 +13,7 @@ const path = require('path');
 
 const app = new Koa();
 
-app.use(async (ctx, next) => await next() || console.log(`${ctx.method} ${ctx.url}`));
+app.use(async (ctx, next) => await next() || console.log(`${Date()} ${ctx.method} ${ctx.url}`));
 
 app.use(async (ctx) => {
   if (ctx.method !== 'GET')

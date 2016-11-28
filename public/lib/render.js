@@ -1,19 +1,24 @@
 'use strict'
 
-class Render {
-  constructor(selector, vertex, fragment) {
-    this.canvas = document.querySelector(selector);
-    this.debug = document.querySelector('#debug');
+const DEBUG = true;
 
-    this.gl = this.canvas.getContext('webgl', { antialias: false });
-    this._2d = this.debug.getContext('2d');
+class Render {
+  constructor(scripts) {
+    this.canvas = {
+      game: document.querySelector('#game'),
+      text: document.querySelector('#text')
+    };
+
+    this.gl = this.canvas.game.getContext('webgl', { antialias: false });
+    this._2d = this.canvas.text.getContext('2d');
+    this.debug = true;
 
     if (!this.gl || !this._2d)
       throw new Error('Unsupported browser');
 
     const shaders = [
-      compile(this.gl, this.gl.VERTEX_SHADER, vertex),
-      compile(this.gl, this.gl.FRAGMENT_SHADER, fragment)
+      compile(this.gl, this.gl.VERTEX_SHADER, scripts.vertex),
+      compile(this.gl, this.gl.FRAGMENT_SHADER, scripts.fragment)
     ];
 
     this.program = link(this.gl, shaders);
@@ -21,15 +26,20 @@ class Render {
     this.gl.clearColor(0, 0, 0, 1);
 
     this.resize()
-    this.canvas.addEventListener('webkitfullscreenchange', this.resize.bind(this));
+    this.canvas.game.addEventListener('webkitfullscreenchange', this.resize.bind(this));
+
+    document.querySelector('#fullscreen').addEventListener('click', this.fullscreen.bind(this));
+    document.querySelector('#debug').addEventListener('click', event => this.debug = event.target.checked);
 
     window.addEventListener('resize', this.resize.bind(this));
   }
 
   clear() {
     this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-    this._2d.clearRect(0, 0, this.debug.clientWidth, this.debug.clientHeight);
-    this._grid();
+    this._2d.clearRect(0, 0, this.canvas.text.clientWidth, this.canvas.text.clientHeight);
+
+    if (this.debug)
+      this._grid();
   }
 
   _grid() {
@@ -55,22 +65,26 @@ class Render {
   drawBody(body) {
     this.draw(body.wireframe, body.model);
 
-    let px = body.model[0][2];
-    let py = body.model[1][2];
-    let vx = body.velocity[0][2];
-    let vy = body.velocity[1][2];
+    if (this.debug) {
+      this.polygon(body.bounds, 8, body.model, [0, 1, 0, 1]);
 
-    this._text(px + 0.1, py - 0.1, `b ${body.wireframe.bounds}`);
-    this._text(px + 0.1, py - 0.2, `p { x: ${px.toFixed(3)}, y: ${py.toFixed(3)} }`);
-    this._text(px + 0.1, py - 0.3, `v { x: ${vx.toFixed(3)}, y: ${vy.toFixed(3)} }`);
+      let px = body.model[0][2];
+      let py = body.model[1][2];
+      let vx = body.velocity[0][2];
+      let vy = body.velocity[1][2];
 
-    if (body.rotation)
-      this._text(px + 0.1, py - 0.4, `r ${body.rotation.toFixed(2)}`);
+      this._text(px + 0.1, py - 0.1, `b ${body.wireframe.bounds}`);
+      this._text(px + 0.1, py - 0.2, `p { x: ${px.toFixed(3)}, y: ${py.toFixed(3)} }`);
+      this._text(px + 0.1, py - 0.3, `v { x: ${vx.toFixed(3)}, y: ${vy.toFixed(3)} }`);
+
+      if (body.rotation)
+        this._text(px + 0.1, py - 0.4, `r ${body.rotation.toFixed(2)}`);
+    }
   }
 
   _text(x, y, string) {
-    const w = this.canvas.width / 2;
-    const h = this.canvas.height / 2;
+    const w = this.canvas.text.clientWidth / 2;
+    const h = this.canvas.text.clientHeight / 2;
 
     this._2d.save();
     this._2d.font = 'normal 16px Helvetica';
@@ -108,17 +122,17 @@ class Render {
   }
 
   resize() {
-    this.canvas.width = this.debug.width = document.body.clientWidth;
-    this.canvas.height = this.debug.height = document.body.clientHeight;
+    this.canvas.game.width = this.canvas.text.width = document.body.clientWidth;
+    this.canvas.game.height = this.canvas.text.height = document.body.clientHeight;
 
-    this.gl.viewport(0, 0, this.canvas.clientWidth, this.canvas.clientHeight);
+    this.gl.viewport(0, 0, this.canvas.game.clientWidth, this.canvas.game.clientHeight);
 
-    this.ratio = this.canvas.clientWidth / this.canvas.clientHeight;
+    this.ratio = this.canvas.game.clientWidth / this.canvas.game.clientHeight;
     this.aspectRatio = scale(1 / (this.ratio), 1);
   }
 
   fullscreen() {
-    this.canvas.webkitRequestFullScreen();
+    this.canvas.game.webkitRequestFullScreen();
   }
 }
 

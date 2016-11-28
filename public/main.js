@@ -2,26 +2,21 @@
 
 loadAssets.then(function (assets) {
 
-  const render = new Render('#game', assets.shaders.vertex, assets.shaders.fragment);
-  const physics = new Physics(render.canvas);
+  const render = new Render(assets.shaders);
+  const physics = new Physics(render.canvas.game);
+
   const audio = new Audio();
 
+  let player = new Player(assets.wireframes.player);
+  let alien = new Alien(assets.wireframes.alien);
+  let bodies = [];
   let paused = false;
 
-  let player = {
-    rotation: Math.PI / 2,
-    model: translate(0, -0.5),
-    velocity: LA.Matrix(Array)(3)(LA.IDENTITY),
-    wireframe: assets.wireframes.player
-  };
+  bodies.push(player);
+  bodies.push(alien);
 
-  let alien = {
-    model: translate(0, 0.5),
-    velocity: LA.Matrix(Array)(3)(LA.IDENTITY),
-    wireframe: assets.wireframes.alien
-  };
-
-  let bodies = [player, alien];
+  for (let x = 0; x < 8; x++)
+    bodies.push(new Asteroid(assets.wireframes.asteroids, physics));
 
   console.log(bodies);
 
@@ -42,7 +37,7 @@ loadAssets.then(function (assets) {
         const collision = Physics.collision(bodies[index], bodies[i]);
 
         /* if (collision) {
-          // paused = true;
+          console.log({ b1: bodies[index], b2: bodies[i] });
           // bodies[index].dead = true;
           // bodies[i].dead = true;
         } */
@@ -50,7 +45,6 @@ loadAssets.then(function (assets) {
 
       physics.update(bodies[index]);
       render.drawBody(bodies[index]);
-      render.polygon(bodies[index].wireframe.bounds, 8, bodies[index].model, [0, 1, 0, 1]);
     }
 
     if (!paused)
@@ -69,8 +63,6 @@ loadAssets.then(function (assets) {
       loop();
     }
   });
-
-  document.querySelector('#fullscreen').addEventListener('click', render.fullscreen.bind(render));
 
 });
 
