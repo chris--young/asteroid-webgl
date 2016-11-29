@@ -2,12 +2,10 @@
 
 class Player extends Body {
   constructor(wireframe) {
-    const model = LA.Matrix(Array)(3)(LA.IDENTITY);
-    const velocity = LA.Matrix(Array)(3)(LA.IDENTITY);
+    const model = rotate(Math.PI / 2);
+    const velocity = LA.Vector(Array)(3)();
 
     super(model, velocity, wireframe);
-
-    this.rotation = Math.PI / 2;
   }
 }
 

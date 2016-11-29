@@ -5,10 +5,9 @@ loadAssets.then(function (assets) {
   const render = new Render(assets.shaders);
   const physics = new Physics(render.canvas.game);
 
-  const audio = new Audio();
-
   let player = new Player(assets.wireframes.player);
   let alien = new Alien(assets.wireframes.alien);
+
   let bodies = [];
   let paused = false;
 

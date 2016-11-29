@@ -1,7 +1,5 @@
 'use strict'
 
-const DEBUG = true;
-
 class Render {
   constructor(scripts) {
     this.canvas = {
@@ -70,12 +68,15 @@ class Render {
 
       let px = body.model[0][2];
       let py = body.model[1][2];
-      let vx = body.velocity[0][2];
-      let vy = body.velocity[1][2];
+      let vx = body.velocity[0];
+      let vy = body.velocity[1];
+      let rx = body.model[0][1];
+      let ry = body.model[1][1];
 
       this._text(px + 0.1, py - 0.1, `b ${body.wireframe.bounds}`);
-      this._text(px + 0.1, py - 0.2, `p { x: ${px.toFixed(3)}, y: ${py.toFixed(3)} }`);
-      this._text(px + 0.1, py - 0.3, `v { x: ${vx.toFixed(3)}, y: ${vy.toFixed(3)} }`);
+      this._text(px + 0.1, py - 0.2, `r ${Math.atan2(rx, ry).toFixed(3)}`);
+      this._text(px + 0.1, py - 0.3, `p { x: ${px.toFixed(3)}, y: ${py.toFixed(3)} }`);
+      this._text(px + 0.1, py - 0.4, `v { x: ${vx.toFixed(3)}, y: ${vy.toFixed(3)} }`);
 
       if (body.rotation)
         this._text(px + 0.1, py - 0.4, `r ${body.rotation.toFixed(2)}`);

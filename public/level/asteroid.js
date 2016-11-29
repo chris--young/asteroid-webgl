@@ -17,11 +17,7 @@ class Asteroid extends Body {
     x = random(ASTEROID_MAX_SPEED);
     y = random(ASTEROID_MAX_SPEED);
 
-    const velocity = LA.Matrix(Array)(3)([
-      [1, 0, x],
-      [0, 1, y],
-      [0, 0, 1]
-    ]);
+    const velocity = LA.Vector(Array)(3)([x, y, 0]);
 
     super(model, velocity, wireframes[i]);
   }
