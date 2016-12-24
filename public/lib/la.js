@@ -27,7 +27,7 @@
   function _vector(type, dimensions, values) {
     if (type === Array) {
       if (values)
-        return values;
+        return Array.from(values);
 
       var a = []; // ArrayBuffer?
 
@@ -134,4 +134,3 @@
   }
 
 }).call(this);
-

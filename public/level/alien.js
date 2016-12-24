@@ -8,4 +8,3 @@ class Alien extends Body {
     super(model, velocity, wireframe);
   }
 }
-

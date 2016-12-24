@@ -5,12 +5,17 @@ const SPEED = 0.01;
 const ROTATION = _360 / 360 * 5;
 const DRAG = 0.9;
 const MIN = 0.001;
+const RIGHT_ARROW = 37;
+const LEFT_ARROW = 39;
+const UP_ARROW = 38;
+const SPACE_BAR = 91;
 
 class Body {
   constructor(model, velocity, wireframe) {
     this.model = model;
     this.velocity = velocity;
     this.wireframe = wireframe;
+    this.dead = false;
   }
 }
 
@@ -34,19 +39,10 @@ class Physics {
   }
 
   update(body) {
-    if (body instanceof Player) {
-      const x = Math.abs(body.velocity[0]);
-      const y = Math.abs(body.velocity[1]);
+    if (body instanceof Player)
+      friction(body);
 
-      if (x > 0 || y > 0)
-        body.velocity = LA.scale(body.velocity, DRAG);
-
-      if (x < MIN)
-        body.velocity[0] = 0;
-
-      if (y < MIN)
-        body.velocity[1] = 0;
-    }
+    body.model = LA.multiply(translate(body.velocity[0], body.velocity[1]), body.model);
 
     if (body.model[1][2] - body.wireframe.bounds > 1)
       body.model = LA.multiply(translate(0, -2), body.model);
@@ -57,18 +53,16 @@ class Physics {
       body.model = LA.multiply(translate(-this.ratio * 2, 0), body.model);
     else if (body.model[0][2] + body.wireframe.bounds < -this.ratio)
       body.model = LA.multiply(translate(this.ratio * 2, 0), body.model);
-
-    body.model = LA.multiply(translate(body.velocity[0], body.velocity[1]), body.model);
   }
 
   control(body) {
-    if (this.input[37])
+    if (this.input[RIGHT_ARROW])
       body.model = LA.multiply(body.model, rotate(ROTATION));
 
-    if (this.input[39])
+    if (this.input[LEFT_ARROW])
       body.model = LA.multiply(body.model, rotate(-ROTATION));
 
-    if (this.input[38]) {
+    if (this.input[UP_ARROW]) {
       const a = Math.atan2(body.model[1][0], body.model[1][1]);
       const x = Math.cos(a) * SPEED;
       const y = Math.sin(a) * SPEED;
@@ -78,12 +72,11 @@ class Physics {
   }
 
   static collision(body1, body2) {
-    const bounds = body1.wireframe.bounds + body2.wireframe.bounds;
-
     const a = body1.model[0][2] - body2.model[0][2];
     const b = body1.model[1][2] - body2.model[1][2];
 
     const distance = Math.sqrt(Math.pow(a, 2) +  Math.pow(b, 2));
+    const bounds = body1.wireframe.bounds + body2.wireframe.bounds;
 
     if (distance > bounds)
       return false;
@@ -104,3 +97,16 @@ class Physics {
   }
 }
 
+function friction(body) {
+  const x = Math.abs(body.velocity[0]);
+  const y = Math.abs(body.velocity[1]);
+
+  if (x > 0 || y > 0)
+    body.velocity = LA.scale(body.velocity, DRAG);
+
+  if (x < MIN)
+    body.velocity[0] = 0;
+
+  if (y < MIN)
+    body.velocity[1] = 0;
+}

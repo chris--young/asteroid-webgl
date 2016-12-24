@@ -9,7 +9,14 @@ class Render {
 
     this.gl = this.canvas.game.getContext('webgl', { antialias: false });
     this._2d = this.canvas.text.getContext('2d');
+
     this.debug = true;
+
+    this.fps = {
+      count: 0,
+      last: Date.now(),
+      rate: 0
+    };
 
     if (!this.gl || !this._2d)
       throw new Error('Unsupported browser');
@@ -33,11 +40,23 @@ class Render {
   }
 
   clear() {
+    const now = Date.now();
+
+    if (now - this.fps.last < 1000) {
+      this.fps.count++;
+    } else {
+      this.fps.rate = this.fps.count / 1;
+      this.fps.count = 0;
+      this.fps.last = now;
+    }
+
     this.gl.clear(this.gl.COLOR_BUFFER_BIT);
     this._2d.clearRect(0, 0, this.canvas.text.clientWidth, this.canvas.text.clientHeight);
 
-    if (this.debug)
+    if (this.debug) {
       this._grid();
+      this._text(0, 0, `${this.fps.rate} FPS`, '#fff');
+    }
   }
 
   _grid() {
@@ -83,13 +102,13 @@ class Render {
     }
   }
 
-  _text(x, y, string) {
+  _text(x, y, string, color) {
     const w = this.canvas.text.clientWidth / 2;
     const h = this.canvas.text.clientHeight / 2;
 
     this._2d.save();
     this._2d.font = 'normal 16px Helvetica';
-    this._2d.fillStyle = '#0f0';
+    this._2d.fillStyle = color || '#0f0';
     this._2d.translate(w, h);
     this._2d.fillText(string, x * w / this.ratio, y * -h);
     this._2d.restore();
@@ -192,4 +211,3 @@ function uniform(gl, program, key, value) {
 
   gl.uniformMatrix3fv(location, false, new Float32Array(value));
 }
-

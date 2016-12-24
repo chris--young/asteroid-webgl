@@ -22,4 +22,3 @@ class Asteroid extends Body {
     super(model, velocity, wireframes[i]);
   }
 }
-

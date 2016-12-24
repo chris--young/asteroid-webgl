@@ -19,4 +19,3 @@ class Audio {
     setTimeout(() => oscillator.stop(), length);
   }
 }
-

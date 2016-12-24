@@ -25,4 +25,3 @@ function get(url) {
         return res.text();
     });
 }
-

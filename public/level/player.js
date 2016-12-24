@@ -7,5 +7,12 @@ class Player extends Body {
 
     super(model, velocity, wireframe);
   }
-}
 
+  shoot(wireframe) {
+    const model = LA.Matrix(Array)(3)(this.model);
+
+    model[1][2] += this.wireframe.bounds + wireframe.bounds * 2;
+
+    return new Bullet(model, wireframe);
+  }
+}

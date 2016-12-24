@@ -32,4 +32,3 @@ function rotate(r) {
     [0,  0,  1]
   ]);
 }
-

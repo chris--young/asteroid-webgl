@@ -12,4 +12,3 @@ void main() {
   gl_Position = v_position = vec4(vec3(a_position.xy, 1) * u_model * u_view, 1);
   v_color = a_color;
 }
-
