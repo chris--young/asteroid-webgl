@@ -10,7 +10,7 @@ class Render {
     this.gl = this.canvas.game.getContext('webgl', { antialias: false });
     this._2d = this.canvas.text.getContext('2d');
 
-    this.debug = true;
+    this.debug = false;
 
     this.fps = {
       count: 0,

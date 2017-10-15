@@ -4,18 +4,29 @@ loadAssets.then(function (assets) {
 
   const render = new Render(assets.shaders);
   const physics = new Physics(render.canvas.game);
+  const audio = new Audio();
 
   let player = new Player(assets.wireframes.player);
   let alien = new Alien(assets.wireframes.alien);
 
   let bodies = [];
   let paused = false;
+  let muted = false;
+  let pitch = 0;
 
   bodies.push(player);
-  bodies.push(alien);
 
-  // for (let x = 0; x < 8; x++)
-    // bodies.push(new Asteroid(assets.wireframes.asteroids, physics));
+  setInterval(() => {
+    if (paused)
+      return;
+
+    alien.dead ? alien.dead = false : bodies.push(alien);
+  }, 10000)
+
+  setInterval(() => muted || audio.beep(++pitch % 2 ? 440 : 220, 250), 2000);
+
+  for (let x = 0; x < 8; x++)
+    bodies.push(new Asteroid(assets.wireframes.asteroids, physics));
 
   function loop() {
     render.clear();
@@ -28,9 +39,10 @@ loadAssets.then(function (assets) {
         bodies[index].dead = true;
 
       for (let i = index + 1; i < bodies.length; i++) {
-        if (Physics.collision(bodies[index], bodies[i])) {
-          bodies[index].dead = false; // true;
-          bodies[i].dead = false; // true;
+        if (!(bodies[index] instanceof Asteroid && bodies[i] instanceof Asteroid) && 
+              Physics.collision(bodies[index], bodies[i])) {
+          bodies[index].dead = true;
+          bodies[i].dead = true;
         }
       }
 
@@ -51,7 +63,9 @@ loadAssets.then(function (assets) {
       return;
 
     event.preventDefault();
-    bodies.push(player.shoot(assets.wireframes.bullet));
+
+    if (!player.dead)
+      bodies.push(player.shoot(assets.wireframes.bullet));
   });
 
   document.querySelector('#pause').addEventListener('click', function (event) {
@@ -62,6 +76,16 @@ loadAssets.then(function (assets) {
       paused = false;
       event.target.innerText = 'Pause';
       loop();
+    }
+  });
+
+  document.querySelector('#mute').addEventListener('click', function (event) {
+    if (!muted) {
+      muted = true;
+      event.target.innerText = 'Unmute';
+    } else {
+      muted = false;
+      event.target.innerText = 'Mute';
     }
   });
 
