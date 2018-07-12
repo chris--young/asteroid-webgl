@@ -34,7 +34,6 @@ class Render {
     this.canvas.game.addEventListener('webkitfullscreenchange', this.resize.bind(this));
 
     document.querySelector('#fullscreen').addEventListener('click', this.fullscreen.bind(this));
-    document.querySelector('#debug').addEventListener('click', event => this.debug = event.target.checked);
 
     window.addEventListener('resize', this.resize.bind(this));
   }
@@ -55,7 +54,7 @@ class Render {
 
     if (this.debug) {
       this._grid();
-      this._text(0, 0, `${this.fps.rate} FPS`, '#fff');
+      this._text(0, 0.9, `${this.fps.rate} FPS`, '#fff');
     }
   }
 
@@ -65,8 +64,6 @@ class Render {
 
     for (let x = -this.ratio; x < this.ratio; x += 0.1)
       this.line(x, 0, Math.PI / 2, [0.25, 0.25, 0.25, 1]);
-    
-    this.polygon(0.01, 10, LA.Matrix(Array)(3)(LA.IDENTITY), [1, 1, 1, 1]);
   }
 
   draw(wireframe, model) {
@@ -93,21 +90,20 @@ class Render {
       let ry = body.model[1][1];
 
       this._text(px + 0.1, py - 0.1, `b ${body.wireframe.bounds}`);
-      this._text(px + 0.1, py - 0.2, `r ${Math.atan2(rx, ry).toFixed(3)}`);
-      this._text(px + 0.1, py - 0.3, `p { x: ${px.toFixed(3)}, y: ${py.toFixed(3)} }`);
-      this._text(px + 0.1, py - 0.4, `v { x: ${vx.toFixed(3)}, y: ${vy.toFixed(3)} }`);
+      this._text(px + 0.1, py - 0.2, `p { x: ${px.toFixed(3)}, y: ${py.toFixed(3)} }`);
+      this._text(px + 0.1, py - 0.3, `v { x: ${vx.toFixed(3)}, y: ${vy.toFixed(3)} }`);
 
       if (body.rotation)
         this._text(px + 0.1, py - 0.4, `r ${body.rotation.toFixed(2)}`);
     }
   }
 
-  _text(x, y, string, color) {
+  _text(x, y, string, color, font) {
     const w = this.canvas.text.clientWidth / 2;
     const h = this.canvas.text.clientHeight / 2;
 
     this._2d.save();
-    this._2d.font = 'normal 16px Helvetica';
+    this._2d.font = font || 'normal 16px Helvetica';
     this._2d.fillStyle = color || '#0f0';
     this._2d.translate(w, h);
     this._2d.fillText(string, x * w / this.ratio, y * -h);

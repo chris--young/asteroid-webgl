@@ -1,7 +1,7 @@
 'use strict'
 
 const BULLET_SPEED = 0.02;
-const BULLET_AGE = 3000;
+const BULLET_AGE = 2000;
 
 class Bullet extends Body {
   constructor(model, wireframe) {

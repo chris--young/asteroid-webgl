@@ -45,14 +45,14 @@ class Physics {
     body.model = LA.multiply(translate(body.velocity[0], body.velocity[1]), body.model);
 
     if (body.model[1][2] - body.wireframe.bounds > 1)
-      body.model = LA.multiply(translate(0, -2), body.model);
+      body.model = LA.multiply(translate(0, -2 - body.wireframe.bounds), body.model);
     else if (body.model[1][2] + body.wireframe.bounds < -1)
-      body.model = LA.multiply(translate(0, 2), body.model);
+      body.model = LA.multiply(translate(0, 2 + body.wireframe.bounds), body.model);
 
     if (body.model[0][2] - body.wireframe.bounds > this.ratio)
-      body.model = LA.multiply(translate(-this.ratio * 2, 0), body.model);
+      body.model = LA.multiply(translate(-this.ratio * 2 - body.wireframe.bounds, 0), body.model);
     else if (body.model[0][2] + body.wireframe.bounds < -this.ratio)
-      body.model = LA.multiply(translate(this.ratio * 2, 0), body.model);
+      body.model = LA.multiply(translate(this.ratio * 2 + body.wireframe.bounds, 0), body.model);
   }
 
   control(body) {

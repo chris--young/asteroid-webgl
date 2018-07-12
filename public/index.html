@@ -9,6 +9,14 @@
 
     <link rel="stylesheet" href="style.css">
 
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121891501-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'UA-121891501-1');
+    </script>
+
   </head>
   <body>
 
@@ -16,14 +24,17 @@
       <h1>This game requires JavaScript.</h1>
     </noscript>
 
+    <a id="fork" href="https://github.com/chris--young/asteroids-webgl">
+      <img src="https://s3.amazonaws.com/github/ribbons/forkme_left_red_aa0000.png" alt="Fork me on GitHub">
+    </a>
+
     <canvas id="game"></canvas>
     <canvas id="text"></canvas>
 
-    <div>
-      <button id="pause">Pause</button>
-      <button id="mute">Mute</button>
-      <button id="fullscreen">Fullscreen</button>
-      <label>debug</label><input id="debug" type="checkbox">
+    <div id="controls">
+      <a href="#" id="pause">Pause</a>
+      <a href="#" id="mute">Mute</a>
+      <a href="#" id="fullscreen">Fullscreen</a>
     </div>
 
     <script src="lib/la.js"></script>
