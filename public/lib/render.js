@@ -66,8 +66,8 @@ class Render {
       this.line(x, 0, Math.PI / 2, [0.25, 0.25, 0.25, 1]);
   }
 
-  draw(wireframe, model) {
-    attribute(this.gl, this.program, 'a_position', wireframe.shape, 2);
+  draw(wireframe, model, size) {
+    attribute(this.gl, this.program, 'a_vertex', wireframe.shape, 2);
     attribute(this.gl, this.program, 'a_color', wireframe.color, 4);
 
     uniform(this.gl, this.program, 'u_model', flatten(model));
@@ -77,7 +77,7 @@ class Render {
   }
 
   drawBody(body) {
-    this.draw(body.wireframe, body.model);
+    this.draw(body.wireframe, body.model, body.size);
 
     if (this.debug) {
       this.polygon(body.bounds, 8, body.model, [0, 1, 0, 1]);
@@ -104,9 +104,12 @@ class Render {
 
     this._2d.save();
     this._2d.font = font || 'normal 16px Helvetica';
+
+    const m = this._2d.measureText(string);
+
     this._2d.fillStyle = color || '#0f0';
-    this._2d.translate(w, h);
-    this._2d.fillText(string, x * w / this.ratio, y * -h);
+    this._2d.translate(w - (m.width / 2), h);
+    this._2d.fillText(string, (x * w / this.ratio), y * -h);
     this._2d.restore();
   }
 
@@ -205,5 +208,8 @@ function uniform(gl, program, key, value) {
   if (!location)
     throw new Error(`Failed to get uniform location "${key}"`);
 
-  gl.uniformMatrix3fv(location, false, new Float32Array(value));
+  if (Array.isArray(value))
+    gl.uniformMatrix3fv(location, false, new Float32Array(value));
+  else
+    gl.uniform1f(location, value);
 }

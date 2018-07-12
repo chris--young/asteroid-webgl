@@ -6,7 +6,7 @@ Play me at [60fpsordie.com/asteroids](http://60fpsordie.com/asteroids)
 
 Use the arrows keys to move and the spacebar to shoot!
 
-Press `~` to toggle debug mode
+Press ~ to toggle debug mode
 
 ## Installation
 

@@ -9,7 +9,7 @@ class Bullet extends Body {
     const x = Math.cos(a) * BULLET_SPEED;
     const y = Math.sin(a) * BULLET_SPEED;
 
-    const velocity = LA.Vector(Array)(3)([x, y, 0]);
+    const velocity = LA.Vector(Array)(2)([x, y]);
 
     super(model, velocity, wireframe);
 

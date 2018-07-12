@@ -11,11 +11,12 @@ const UP_ARROW = 38;
 const SPACE_BAR = 91;
 
 class Body {
-  constructor(model, velocity, wireframe) {
+  constructor(model, velocity, wireframe, size) {
     this.model = model;
     this.velocity = velocity;
     this.wireframe = wireframe;
     this.dead = false;
+    this.size = 1;
   }
 }
 
@@ -38,6 +39,7 @@ class Physics {
     this.ratio = this.width / this.height;
   }
 
+  // why would you even do this? just use euler angles
   update(body) {
     if (body instanceof Player)
       friction(body);
@@ -76,7 +78,7 @@ class Physics {
     const b = body1.model[1][2] - body2.model[1][2];
 
     const distance = Math.sqrt(Math.pow(a, 2) +  Math.pow(b, 2));
-    const bounds = body1.wireframe.bounds + body2.wireframe.bounds;
+    const bounds = body1.wireframe.bounds * body1.size + body2.wireframe.bounds * body2.size;
 
     if (distance > bounds)
       return false;
