@@ -1,7 +1,5 @@
 'use strict'
 
-let start_blink = null;
-
 loadAssets.then(function (assets) {
 
   const render = new Render(assets.shaders);
@@ -14,7 +12,8 @@ loadAssets.then(function (assets) {
   let bodies = [];
   let paused = false;
   let pitch = 0;
-  let blink = 0;
+  let blink = false;
+  let blink_fast = false;
 
   bodies.push(player);
 
@@ -27,8 +26,8 @@ loadAssets.then(function (assets) {
   }, 10000); */
 
   setInterval(() => paused || audio.beep(++pitch % 2 ? 440 : 220, 250), 2000);
-
-  start_blink = setInterval(() => blink = !blink, 1000);
+  setInterval(() => blink = !blink, 1000);
+  setInterval(() => blink_fast = !blink_fast, 250);
 
   for (let x = 0; x < 8; x++)
     bodies.push(new Asteroid(assets.wireframes.asteroids, physics, 1));
@@ -37,10 +36,15 @@ loadAssets.then(function (assets) {
     render.clear();
 
     if (!player.started) {
-      render._text(0, 0, 'ASTEROIDS', '#eee', 'bold 80px Hyperspace');
+      render._text(0, 0, 'asteroids', '#eee', 'bold 80px Hyperspace');
 
       if (blink)
         render._text(0, -0.1, 'press space to start', '#eee', 'bold 30px Hyperspace');
+    } else {
+      if (!player.lives && blink)
+        render._text(0, 0, 'game over', '#eee', 'bold 60px Hyperspace');
+
+      render._text(0, 0.9, `Lives ${player.lives}    Score ${player.score}`, '#eee', '18px Hyperspace');
     }
 
     if (!player.dead)
@@ -57,7 +61,7 @@ loadAssets.then(function (assets) {
         if (bodies[i].dead)
           continue;
 
-        // gross
+        // gross, use a body.collides_with bitmask then & to check
         if (((bodies[index] instanceof Asteroid && bodies[i] instanceof Player) ||
             (bodies[index] instanceof Player && bodies[i] instanceof Asteroid) ||
             (bodies[index] instanceof Asteroid && bodies[i] instanceof Bullet) ||
@@ -66,25 +70,33 @@ loadAssets.then(function (assets) {
             (bodies[index] instanceof Bullet && bodies[i] instanceof Alien)) &&
             Physics.collision(bodies[index], bodies[i])) {
 
-            if (render.debug && (bodies[index] instanceof Player || bodies[i] instanceof Player))
+            if ((player.spawning || render.debug) && (bodies[index] instanceof Player || bodies[i] instanceof Player))
               continue;
 
             bodies[index].dead = true;
             bodies[i].dead = true;
             audio.pshh();
+
+            if (bodies[index] instanceof Asteroid) {
+              if (bodies[index].size > 0.25)
+                bodies = bodies.concat(bodies[index].explode());
+
+              ++player.score;
+
+              bodies.splice(index, 1);
+            } else if (bodies[index] instanceof Bullet) {
+              bodies.splice(index, 1);
+            } else if (bodies[index] instanceof Player) {
+              bodies[index].die();
+            }
         }
       }
 
       if (!bodies[index].dead) {
         physics.update(bodies[index]);
-        render.drawBody(bodies[index]);
-      } else if (bodies[index] instanceof Asteroid) {
-        if (bodies[index].size > 0.25)
-          bodies = bodies.concat(bodies[index].explode());
 
-        bodies.splice(index, 1);
-      } else if (bodies[index] instanceof Bullet) {
-        bodies.splice(index, 1);
+        if (bodies[index] instanceof Player === false || !bodies[index].spawning || blink_fast)
+          render.drawBody(bodies[index]);
       }
     }
 
@@ -95,12 +107,12 @@ loadAssets.then(function (assets) {
   loop();
 
   document.addEventListener('keydown', function (event) {
+    event.preventDefault();
+
     if (event.which === 192)
       return render.debug = !render.debug;
     else if (event.which !== 32)
       return;
-
-    event.preventDefault();
 
     const bullet = player.shoot(assets.wireframes.bullet);
 
@@ -111,6 +123,8 @@ loadAssets.then(function (assets) {
   });
 
   document.querySelector('#pause').addEventListener('click', function (event) {
+    event.preventDefault();
+
     if (!paused) {
       paused = true;
       event.target.innerText = 'Resume';
@@ -122,6 +136,8 @@ loadAssets.then(function (assets) {
   });
 
   document.querySelector('#mute').addEventListener('click', function (event) {
+    event.preventDefault();
+
     if (!audio.muted) {
       audio.muted = true;
       event.target.innerText = 'Unmute';

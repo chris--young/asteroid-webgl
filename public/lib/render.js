@@ -33,7 +33,7 @@ class Render {
     this.resize()
     this.canvas.game.addEventListener('webkitfullscreenchange', this.resize.bind(this));
 
-    document.querySelector('#fullscreen').addEventListener('click', this.fullscreen.bind(this));
+    // document.querySelector('#fullscreen').addEventListener('click', this.fullscreen.bind(this));
 
     window.addEventListener('resize', this.resize.bind(this));
   }

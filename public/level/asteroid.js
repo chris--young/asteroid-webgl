@@ -20,7 +20,7 @@ class Asteroid extends Body {
     const velocity = LA.Vector(Array)(2)([x, y]);
 
     super(model, velocity, wireframes[i]);
-    
+
     this.size = size;
 
     // doing this to get the closure around wireframes and physics, those should really just be globals or something
@@ -34,7 +34,7 @@ class Asteroid extends Body {
 
         pieces.push(piece);
       }
-  
+
       return pieces;
     };
   }

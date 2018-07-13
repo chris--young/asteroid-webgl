@@ -3,7 +3,7 @@
 const _360 = Math.PI * 2;
 const SPEED = 0.01;
 const ROTATION = _360 / 360 * 5;
-const DRAG = 0.9;
+const DRAG = 0.99;
 const MIN = 0.001;
 const RIGHT_ARROW = 37;
 const LEFT_ARROW = 39;
