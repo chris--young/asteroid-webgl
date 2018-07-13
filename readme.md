@@ -1,6 +1,8 @@
 # asteroids-webgl
 
-Play me at [60fpsordie.com/asteroids](http://60fpsordie.com/asteroids)
+Play it at [60fpsordie.com/asteroids](http://60fpsordie.com/asteroids)
+
+![screenshot](https://github.com/chris--young/asteroids-webgl/blob/master/screenshot.png)
 
 ## Controls
 
