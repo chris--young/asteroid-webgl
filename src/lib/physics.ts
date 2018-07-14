@@ -1,5 +1,6 @@
 import LA from './la'
 import Player from '../level/player'
+import Body from './body'
 import { translate, rotate } from './utils'
 
 const _360 = Math.PI * 2;
@@ -20,7 +21,7 @@ export default class Physics {
   height: number;
   ratio: number;
 
-  constructor(canvas) {
+  constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
     this.input = { timestamp: Date.now() };
 
@@ -32,14 +33,14 @@ export default class Physics {
     window.addEventListener('resize', this.resize.bind(this));
   }
 
-  resize() {
+  resize(): void {
     this.width = this.canvas.clientWidth;
     this.height = this.canvas.clientHeight;
     this.ratio = this.width / this.height;
   }
 
   // why would you even do this? just use euler angles
-  update(body) {
+  update(body: Body): void {
     if (body instanceof Player)
       friction(body);
 
@@ -56,7 +57,7 @@ export default class Physics {
       body.model = LA.multiply(translate(this.ratio * 2 + body.wireframe.bounds, 0), body.model);
   }
 
-  control(body) {
+  control(body: Body): void {
     if (this.input[RIGHT_ARROW])
       body.model = LA.multiply(body.model, rotate(ROTATION));
 
@@ -72,7 +73,7 @@ export default class Physics {
     }
   }
 
-  static collision(body1, body2) {
+  static collision(body1: Body, body2: Body): boolean {
     const a = body1.model[0][2] - body2.model[0][2];
     const b = body1.model[1][2] - body2.model[1][2];
 
@@ -98,7 +99,7 @@ export default class Physics {
   }
 }
 
-function friction(body) {
+function friction(body: Body): void {
   const x = Math.abs(body.velocity[0]);
   const y = Math.abs(body.velocity[1]);
 

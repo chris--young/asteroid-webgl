@@ -8,18 +8,14 @@ export const loadAssets = Promise.all(ASSETS.map(get)).then((assets) => ({
   wireframes: assets[2]
 }));
 
-function get(url) {
-  return fetch(url)
-    .then((res) => {
-      if (res.status !== 200)
-        throw new Error(`${url} responded with ${res.status}`);
+async function get(url: string) {
+  const res = await fetch(url);
 
-      return res;
-    })
-    .then((res) => {
-      if (/application\/json/.test(res.headers.get('Content-Type')))
-        return res.json();
-      else
-        return res.text();
-    });
+  if (res.status !== 200)
+    throw new Error(`${url} responded with ${res.status}`);
+
+  if (/application\/json/.test(res.headers.get('Content-Type')))
+    return res.json();
+  else
+    return res.text();
 }

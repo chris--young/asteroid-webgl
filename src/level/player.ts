@@ -1,13 +1,14 @@
 import LA from '../lib/la'
 import { rotate } from '../lib/utils'
-import Body from './body'
+import Body from '../lib/body'
+import Wireframe from '../lib/wireframe'
 import Bullet from './bullet'
 
 export default class Player implements Body {
 
   model: number[][];
-  velocity: number[][];
-  wireframe: number[][];
+  velocity: number[];
+  wireframe: Wireframe;
   lives: number;
   score: number;
   started: boolean;
@@ -15,7 +16,7 @@ export default class Player implements Body {
   spawning: boolean;
   size: number;
 
-  constructor(wireframe) {
+  constructor(wireframe: Wireframe) {
     const model = rotate(Math.PI / 2);
     const velocity = LA.Vector(Array)(2)();
 
@@ -30,7 +31,7 @@ export default class Player implements Body {
     this.size = 1;
   }
 
-  shoot(wireframe) {
+  shoot(wireframe: Wireframe): Bullet {
     if (!this.started) {
       this.started = true;
       this.dead = false;
@@ -47,7 +48,7 @@ export default class Player implements Body {
     return new Bullet(model, wireframe);
   }
 
-  die() {
+  die(): void {
     if (this.spawning || !this.started)
       return;
 
@@ -57,7 +58,7 @@ export default class Player implements Body {
     setTimeout(this.respawn.bind(this), 1500);
   }
 
-  respawn() {
+  respawn(): void {
     this.model = rotate(Math.PI / 2);
     this.velocity = LA.Vector(Array)(2)();
     this.dead = false;

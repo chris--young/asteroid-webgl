@@ -7,7 +7,7 @@
     "build": "tsc",
     "start": "node index.js",
     "dev": "tsc && node index.js",
-    "deploy": "aws s3 cp public s3://60fpsordie.com/asteroids --recursive --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers"
+    "deploy": "tsc && aws s3 cp public s3://60fpsordie.com/asteroids --recursive --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers"
   },
   "author": "Chris Young (youngc5690@gmail.com)",
   "license": "ISC",

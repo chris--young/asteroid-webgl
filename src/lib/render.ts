@@ -1,4 +1,6 @@
 import { scale, flatten, translate } from './utils'
+import Wireframe from './wireframe'
+import Body from './body'
 
 export default class Render {
 
@@ -20,7 +22,7 @@ export default class Render {
   ratio: number;
   aspectRatio: number[][];
 
-  constructor(scripts) {
+  constructor(vertex: string, fragment: string) {
     this.canvas = {
       game: document.querySelector('#game'),
       text: document.querySelector('#text')
@@ -41,8 +43,8 @@ export default class Render {
       throw new Error('Unsupported browser');
 
     const shaders = [
-      compile(this.gl, this.gl.VERTEX_SHADER, scripts.vertex),
-      compile(this.gl, this.gl.FRAGMENT_SHADER, scripts.fragment)
+      compile(this.gl, this.gl.VERTEX_SHADER, vertex),
+      compile(this.gl, this.gl.FRAGMENT_SHADER, fragment)
     ];
 
     this.program = link(this.gl, shaders);
@@ -57,7 +59,7 @@ export default class Render {
     window.addEventListener('resize', this.resize.bind(this));
   }
 
-  clear() {
+  clear(): void {
     const now = Date.now();
 
     if (now - this.fps.last < 1000) {
@@ -77,7 +79,7 @@ export default class Render {
     }
   }
 
-  _grid() {
+  _grid(): void {
     for (let y = -1; y < 1; y += 0.1)
       this.line(0, y, Math.PI, [0.25, 0.25, 0.25, 1]);
 
@@ -85,7 +87,7 @@ export default class Render {
       this.line(x, 0, Math.PI / 2, [0.25, 0.25, 0.25, 1]);
   }
 
-  draw(wireframe, model) {
+  draw(wireframe: Wireframe, model: number[][]): void {
     attribute(this.gl, this.program, 'a_vertex', wireframe.shape, 2);
     attribute(this.gl, this.program, 'a_color', wireframe.color, 4);
 
@@ -95,11 +97,11 @@ export default class Render {
     this.gl.drawArrays(this.gl.LINE_STRIP, 0, wireframe.shape.length / 2);
   }
 
-  drawBody(body) {
+  drawBody(body: Body): void {
     this.draw(body.wireframe, body.model);
 
     if (this.debug) {
-      this.polygon(body.bounds, 8, body.model, [0, 1, 0, 1]);
+      this.polygon(body.wireframe.bounds, 8, body.model, [0, 1, 0, 1]);
 
       let px = body.model[0][2];
       let py = body.model[1][2];
@@ -111,13 +113,10 @@ export default class Render {
       this._text(px + 0.1, py - 0.1, `b ${body.wireframe.bounds}`);
       this._text(px + 0.1, py - 0.2, `p { x: ${px.toFixed(3)}, y: ${py.toFixed(3)} }`);
       this._text(px + 0.1, py - 0.3, `v { x: ${vx.toFixed(3)}, y: ${vy.toFixed(3)} }`);
-
-      if (body.rotation)
-        this._text(px + 0.1, py - 0.4, `r ${body.rotation.toFixed(2)}`);
     }
   }
 
-  _text(x, y, string, color?, font?) {
+  _text(x: number, y: number, string: string, color?: string, font?: string): void {
     const w = this.canvas.text.clientWidth / 2;
     const h = this.canvas.text.clientHeight / 2;
 
@@ -132,22 +131,24 @@ export default class Render {
     this._2d.restore();
   }
 
-  line(x, y, angle, color) {
+  line(x: number, y: number, angle: number, color: number[]): void {
     const c = Math.cos(angle) * this.ratio;
     const s = Math.sin(angle);
 
-    const wireframe = {
+    const wireframe: Wireframe = {
       shape: [-c, -s, c, s],
-      color: color.concat(color)
+      color: color.concat(color),
+      bounds: 0
     };
 
     this.draw(wireframe, translate(x, y));
   }
 
-  polygon(radius, sides, model, color) {
-    const wireframe = {
+  polygon(radius: number, sides: number, model: number[][], color: number[]): void {
+    const wireframe: Wireframe = {
       shape: [],
-      color: []
+      color: [],
+      bounds: 0
     };
 
     for (let r = 0; r <= Math.PI * 2; r += Math.PI * 2 / sides) {
@@ -159,7 +160,7 @@ export default class Render {
     this.draw(wireframe, model);
   }
 
-  resize() {
+  resize(): void {
     this.canvas.game.width = this.canvas.text.width = document.body.clientWidth;
     this.canvas.game.height = this.canvas.text.height = document.body.clientHeight;
 
@@ -169,12 +170,12 @@ export default class Render {
     this.aspectRatio = scale(1 / (this.ratio), 1);
   }
 
-  fullscreen() {
+  fullscreen(): void {
     this.canvas.game.webkitRequestFullScreen();
   }
 }
 
-function compile(gl, type, source) {
+function compile(gl: WebGLRenderingContext, type: number, source: string): WebGLShader {
   const shader = gl.createShader(type);
 
   gl.shaderSource(shader, source);
@@ -191,7 +192,7 @@ function compile(gl, type, source) {
   return shader;
 }
 
-function link(gl, shaders) {
+function link(gl: WebGLRenderingContext, shaders: WebGLShader[]): WebGLProgram {
   const program = gl.createProgram();
 
   shaders.forEach(shader => gl.attachShader(program, shader));
@@ -208,7 +209,7 @@ function link(gl, shaders) {
   return program;
 }
 
-function attribute(gl, program, key, value, size) {
+function attribute(gl: WebGLRenderingContext, program: WebGLProgram, key: string, value: number[], size: number): void {
   const buffer = gl.createBuffer(); 
   const location = gl.getAttribLocation(program, key);
 
@@ -221,7 +222,7 @@ function attribute(gl, program, key, value, size) {
   gl.vertexAttribPointer(location, size, gl.FLOAT, false, 0, 0);
 }
 
-function uniform(gl, program, key, value) {
+function uniform(gl: WebGLRenderingContext, program: WebGLProgram, key: string, value: number | number[]): void {
   const location = gl.getUniformLocation(program, key);
 
   if (!location)

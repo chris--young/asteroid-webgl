@@ -20,7 +20,7 @@ export default class Audio {
       this.whiteNoise.getChannelData(0)[x] = Math.random() * 2 - 1;
   }
 
-  beep(pitch, length) {
+  beep(pitch: number, length: number): void {
     if (this.muted)
       return;
 
@@ -35,7 +35,7 @@ export default class Audio {
     oscillator.stop(this.context.currentTime + length);
   }
 
-  pewpew() {
+  pewpew(): void {
     if (this.muted)
       return;
 
@@ -51,7 +51,7 @@ export default class Audio {
     oscillator.stop(this.context.currentTime + 0.25);
   }
 
-  pshh() {
+  pshh(): void {
     if (this.muted)
       return;
 

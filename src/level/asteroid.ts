@@ -1,19 +1,21 @@
 import LA from '../lib/la'
+import Physics from '../lib/physics'
 import { between, random, scale } from '../lib/utils'
-import Body from './body'
+import Body from '../lib/body'
+import Wireframe from '../lib/wireframe'
 
 const ASTEROID_MAX_SPEED = 0.01;
 
 export default class Asteroid implements Body {
 
   model: number[][];
-  wireframe: number[][];
-  velocity: number[][];
+  wireframe: Wireframe;
+  velocity: number[];
   dead: boolean;
   size: number;
   explode: any;
 
-  constructor(wireframes, physics, size) {
+  constructor(wireframes: Wireframe[], physics: Physics, size: number) {
     let i = between(0, wireframes.length - 1) | 0;
     let x = random(physics.ratio);
     let y = random(1);
@@ -36,7 +38,7 @@ export default class Asteroid implements Body {
     this.size = size;
 
     // doing this to get the closure around wireframes and physics, those should really just be globals or something
-    this.explode = () => {
+    this.explode = (): Asteroid[] => {
       const pieces = [];
 
       for (let x = 0; x < 3; ++x) {

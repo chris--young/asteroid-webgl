@@ -10,9 +10,9 @@ import Alien from './level/alien'
 
 const BULLET_AGE = 2000;
 
-loadAssets.then(function (assets) {
+loadAssets.then(function (assets): void {
 
-  const render = new Render(assets.shaders);
+  const render = new Render(assets.shaders.vertex, assets.shaders.fragment);
   const physics = new Physics(render.canvas.game);
   const audio = new Audio();
 
@@ -42,7 +42,7 @@ loadAssets.then(function (assets) {
   for (let x = 0; x < 8; x++)
     bodies.push(new Asteroid(assets.wireframes.asteroids, physics, 1));
 
-  function loop() {
+  function loop(): void {
     render.clear();
 
     if (!player.started) {
@@ -116,13 +116,15 @@ loadAssets.then(function (assets) {
 
   loop();
 
-  document.addEventListener('keydown', function (event) {
+  document.addEventListener('keydown', (event: KeyboardEvent): void => {
     event.preventDefault();
 
-    if (event.which === 192)
-      return render.debug = !render.debug;
-    else if (event.which !== 32)
+    if (event.which === 192) {
+      render.debug = !render.debug;
       return;
+    } else if (event.which !== 32) {
+      return;
+    }
 
     const bullet = player.shoot(assets.wireframes.bullet);
 
@@ -132,7 +134,7 @@ loadAssets.then(function (assets) {
     }
   });
 
-  document.querySelector('#pause').addEventListener('click', function (event) {
+  document.querySelector('#pause').addEventListener('click', (event: MouseEvent): void => {
     event.preventDefault();
 
     const target: HTMLAnchorElement = <HTMLAnchorElement>event.target;
@@ -147,7 +149,7 @@ loadAssets.then(function (assets) {
     }
   });
 
-  document.querySelector('#mute').addEventListener('click', function (event) {
+  document.querySelector('#mute').addEventListener('click', (event: MouseEvent): void => {
     event.preventDefault();
 
     const target: HTMLAnchorElement = <HTMLAnchorElement>event.target;
