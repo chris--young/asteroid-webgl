@@ -1,0 +1,22 @@
+{
+    "defaultSeverity": "error",
+    "extends": [
+        "tslint:recommended"
+    ],
+    "jsRules": {},
+    "rules": {
+        "curly": false,
+        "indent": [true, "tabs", 4],
+        "interface-name": false,
+        "linebreak-style": [true, "CRLF"],
+        "member-access": false,
+        "member-ordering": false,
+        "no-bitwise": false,
+        "no-shadowed-variable": false,
+        "no-trailing-whitespace": true,
+        "semicolon": false,
+        "trailing-comma": [true, { "multiline": "never", "singleline": "never" }],
+        "variable-name": [true, "ban-keywords", "check-format", "allow-snake-case"]
+    },
+    "rulesDirectory": []
+}

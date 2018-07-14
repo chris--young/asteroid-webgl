@@ -1,3 +1,5 @@
+/* tslint:disable */
+
 const LA = {
 
   TYPES: [

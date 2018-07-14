@@ -1,22 +1,22 @@
 {
-  "name": "asteroids-webgl",
-  "version": "1.0.0",
-  "description": "A web based remake of the classic arcade game Asteroids",
-  "main": "index.js",
-  "scripts": {
-    "build": "tsc",
-    "start": "node index.js",
-    "dev": "tsc && node index.js",
-    "deploy": "tsc && aws s3 cp public s3://60fpsordie.com/asteroids --recursive --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers"
-  },
-  "author": "Chris Young (youngc5690@gmail.com)",
-  "license": "ISC",
-  "dependencies": {
-    "koa": "2.0.0",
-    "koa-static": "2.0.0"
-  },
-  "devDependencies": {
-    "@types/node": "^10.5.2",
-    "typescript": "^2.9.2"
-  }
+	"name": "asteroids-webgl",
+	"version": "1.0.0",
+	"description": "A web based remake of the classic arcade game Asteroids",
+	"main": "index.js",
+	"scripts": {
+		"lint": "tslint -c tslint.json 'src/**/*.ts'",
+		"build": "npm run lint && tsc",
+		"dev": "npm run build && node index.js",
+		"deploy": "npm run build && aws s3 cp public s3://60fpsordie.com/asteroids --recursive --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers"
+	},
+	"author": "Chris Young (youngc5690@gmail.com)",
+	"license": "ISC",
+	"dependencies": {
+		"koa": "2.0.0",
+		"koa-static": "2.0.0"
+	},
+	"devDependencies": {
+		"tslint": "^5.10.0",
+		"typescript": "^2.9.2"
+	}
 }
