@@ -21,7 +21,7 @@ cd asteroids-webgl
 npm install
 
 // run the server
-node ./index.js
+npm start
 ```
 
 Then open [http://127.0.0.1:8421](http://127.0.0.1:8421) in your favorite browser...

@@ -1,10 +1,11 @@
 {
   "name": "asteroids-webgl",
   "version": "1.0.0",
-  "description": "",
+  "description": "A web based remake of the classic arcade game Asteroids",
   "main": "index.js",
   "scripts": {
-    "test": "mocha tests.js"
+    "start": "node index.js",
+    "deploy": "aws s3 cp public s3://60fpsordie.com/asteroids --recursive --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers"
   },
   "author": "Chris Young (young.c.5690@gmail.com)",
   "license": "ISC",
