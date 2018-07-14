@@ -10,7 +10,7 @@ Use the arrows keys to move and the spacebar to shoot!
 
 Press ~ to toggle debug mode
 
-## Installation
+## Setup
 
 ```
 // clone into this repo
@@ -20,8 +20,8 @@ cd asteroids-webgl
 // install dependencies (requires Node.js 8)
 npm install
 
-// run the server
-npm start
+// compile and start the server
+npm run dev
 ```
 
 Then open [http://127.0.0.1:8421](http://127.0.0.1:8421) in your favorite browser...

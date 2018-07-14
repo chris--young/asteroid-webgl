@@ -1,6 +1,25 @@
-'use strict'
+import { scale, flatten, translate } from './utils'
 
-class Render {
+export default class Render {
+
+  canvas: {
+    game: HTMLCanvasElement,
+    text: HTMLCanvasElement
+  };
+
+  fps: {
+    count: number,
+    rate: number,
+    last: number
+  };
+
+  gl: WebGLRenderingContext;
+  _2d: CanvasRenderingContext2D;
+  debug: boolean;
+  program: WebGLProgram;
+  ratio: number;
+  aspectRatio: number[][];
+
   constructor(scripts) {
     this.canvas = {
       game: document.querySelector('#game'),
@@ -66,7 +85,7 @@ class Render {
       this.line(x, 0, Math.PI / 2, [0.25, 0.25, 0.25, 1]);
   }
 
-  draw(wireframe, model, size) {
+  draw(wireframe, model) {
     attribute(this.gl, this.program, 'a_vertex', wireframe.shape, 2);
     attribute(this.gl, this.program, 'a_color', wireframe.color, 4);
 
@@ -77,7 +96,7 @@ class Render {
   }
 
   drawBody(body) {
-    this.draw(body.wireframe, body.model, body.size);
+    this.draw(body.wireframe, body.model);
 
     if (this.debug) {
       this.polygon(body.bounds, 8, body.model, [0, 1, 0, 1]);
@@ -98,7 +117,7 @@ class Render {
     }
   }
 
-  _text(x, y, string, color, font) {
+  _text(x, y, string, color?, font?) {
     const w = this.canvas.text.clientWidth / 2;
     const h = this.canvas.text.clientHeight / 2;
 

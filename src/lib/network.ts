@@ -1,8 +1,6 @@
-'use strict'
-
 const ASSETS = ['shaders/vertex.glsl', 'shaders/fragment.glsl', 'wireframes.json'];
 
-const loadAssets = Promise.all(ASSETS.map(get)).then((assets) => ({
+export const loadAssets = Promise.all(ASSETS.map(get)).then((assets) => ({
   shaders: {
     vertex: assets[0],
     fragment: assets[1],

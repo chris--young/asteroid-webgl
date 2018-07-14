@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "module": "amd",
+        "removeComments": true,
+        "sourceMap": true,
+        "outFile": "public/main.js",
+        "target": "es5",
+        "alwaysStrict": true,
+        "lib": [
+            "dom",
+            "es2015"
+        ]
+    },
+    "compileOnSave": true,
+    "include": [
+        "src/**/*"
+    ],
+    "files": [
+        "src/main.ts"
+    ]
+}

@@ -7,7 +7,54 @@
 
     <title>Asteroids</title>
 
-    <link rel="stylesheet" href="style.css">
+    <style>
+      @font-face {
+        font-family: Hyperspace;
+        src: url(Hyperspace.otf);
+      }
+
+      html, body, canvas {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        font-family: 'Hyperspace';
+        font-weight: 300;
+      }
+
+      canvas {
+        position: fixed;
+      }
+
+      #fork img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        border: 0;
+        z-index: 5;
+      }
+
+      #controls {
+        position: absolute;
+        margin: 1rem;
+        right: 0;
+        z-index: 10;
+      }
+
+      #controls a {
+        margin-right: 1rem;
+        text-decoration: none;
+        color: #aaa;
+      }
+
+      #controls a:last-child {
+        margin-right: 0;
+      }
+
+      #controls label {
+        font-size: 13px;
+        color: #eee;
+      }
+    </style>
 
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121891501-1"></script>
     <script>
@@ -37,18 +84,7 @@
       <!-- a href="#" id="fullscreen">Fullscreen</a -->
     </div>
 
-    <script src="lib/la.js"></script>
-    <script src="lib/utils.js"></script>
-    <script src="lib/render.js"></script>
-    <script src="lib/audio.js"></script>
-    <script src="lib/physics.js"></script>
-    <script src="lib/network.js"></script>
-
-    <script src="level/asteroid.js"></script>
-    <script src="level/alien.js"></script>
-    <script src="level/player.js"></script>
-    <script src="level/bullet.js"></script>
-
+    <script data-main="main" src="require.js"></script>
     <script src="main.js"></script>
 
   </body>

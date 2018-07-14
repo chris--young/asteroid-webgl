@@ -1,4 +1,6 @@
-'use strict'
+import LA from './la'
+import Player from '../level/player'
+import { translate, rotate } from './utils'
 
 const _360 = Math.PI * 2;
 const SPEED = 0.01;
@@ -10,17 +12,14 @@ const LEFT_ARROW = 39;
 const UP_ARROW = 38;
 const SPACE_BAR = 91;
 
-class Body {
-  constructor(model, velocity, wireframe, size) {
-    this.model = model;
-    this.velocity = velocity;
-    this.wireframe = wireframe;
-    this.dead = false;
-    this.size = 1;
-  }
-}
+export default class Physics {
 
-class Physics {
+  canvas: HTMLCanvasElement;
+  input: object;
+  width: number;
+  height: number;
+  ratio: number;
+
   constructor(canvas) {
     this.canvas = canvas;
     this.input = { timestamp: Date.now() };

@@ -1,17 +1,33 @@
-'use strict'
+import LA from '../lib/la'
+import { rotate } from '../lib/utils'
+import Body from './body'
+import Bullet from './bullet'
 
-class Player extends Body {
+export default class Player implements Body {
+
+  model: number[][];
+  velocity: number[][];
+  wireframe: number[][];
+  lives: number;
+  score: number;
+  started: boolean;
+  dead: boolean;
+  spawning: boolean;
+  size: number;
+
   constructor(wireframe) {
     const model = rotate(Math.PI / 2);
     const velocity = LA.Vector(Array)(2)();
 
-    super(model, velocity, wireframe);
-
+    this.model = model;
+    this.velocity = velocity;
+    this.wireframe = wireframe;
     this.lives = 3;
     this.score = 0;
     this.started = false;
     this.dead = true;
     this.spawning = false;
+    this.size = 1;
   }
 
   shoot(wireframe) {
@@ -47,9 +63,6 @@ class Player extends Body {
     this.dead = false;
     this.spawning = true;
 
-    setTimeout(() => {
-      this.spawning = false;
-      this.once = true;
-    }, 2000);
+    setTimeout(() => this.spawning = false, 2000);
   }
 }

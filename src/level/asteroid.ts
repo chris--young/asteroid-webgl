@@ -1,8 +1,18 @@
-'use strict'
+import LA from '../lib/la'
+import { between, random, scale } from '../lib/utils'
+import Body from './body'
 
 const ASTEROID_MAX_SPEED = 0.01;
 
-class Asteroid extends Body {
+export default class Asteroid implements Body {
+
+  model: number[][];
+  wireframe: number[][];
+  velocity: number[][];
+  dead: boolean;
+  size: number;
+  explode: any;
+
   constructor(wireframes, physics, size) {
     let i = between(0, wireframes.length - 1) | 0;
     let x = random(physics.ratio);
@@ -19,8 +29,10 @@ class Asteroid extends Body {
 
     const velocity = LA.Vector(Array)(2)([x, y]);
 
-    super(model, velocity, wireframes[i]);
-
+    this.model = model;
+    this.velocity = velocity;
+    this.wireframe = wireframes[i];
+    this.dead = false;
     this.size = size;
 
     // doing this to get the closure around wireframes and physics, those should really just be globals or something

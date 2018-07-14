@@ -1,6 +1,10 @@
-'use strict'
+export default class Audio {
 
-class Audio {
+  context: AudioContext;
+  volume: number;
+  muted: boolean;
+  whiteNoise: AudioBuffer;
+
   constructor() {
     this.context = new AudioContext();
 
@@ -8,9 +12,9 @@ class Audio {
       throw new Error('Unsupported browser');
 
     this.volume = 0.1;
-    this.muted = false;
+    this.muted = true;
 
-    this.whiteNoise = new AudioBuffer({ sampleRate: this.context.sampleRate, length: this.context.sampleRate * 0.75, numberOfChannels: 1 });
+    this.whiteNoise = this.context.createBuffer(1, this.context.sampleRate * 0.75, this.context.sampleRate);
 
     for (let x = 0; x < this.whiteNoise.length; ++x)
       this.whiteNoise.getChannelData(0)[x] = Math.random() * 2 - 1;
@@ -20,9 +24,10 @@ class Audio {
     if (this.muted)
       return;
 
-    const oscillator = new OscillatorNode(this.context);
-    const volume = new GainNode(this.context, { gain: this.volume });
+    const oscillator = this.context.createOscillator();
+    const volume = this.context.createGain();
 
+    volume.gain.value = this.volume;
     oscillator.type = 'square';
     oscillator.frequency.value = pitch;
     oscillator.connect(volume).connect(this.context.destination);
@@ -34,9 +39,10 @@ class Audio {
     if (this.muted)
       return;
 
-    const oscillator = new OscillatorNode(this.context);
-    const volume = new GainNode(this.context, { gain: this.volume });
+    const oscillator = this.context.createOscillator();
+    const volume = this.context.createGain();
 
+    volume.gain.value = this.volume;
     oscillator.type = 'triangle';
     oscillator.frequency.value = 4000;
     oscillator.frequency.linearRampToValueAtTime(400, this.context.currentTime + 0.25);
@@ -49,9 +55,11 @@ class Audio {
     if (this.muted)
       return;
 
-    const noise = new AudioBufferSourceNode(this.context, { buffer: this.whiteNoise });
-    const volume = new GainNode(this.context, { gain: this.volume });
+    const noise = this.context.createBufferSource();
+    const volume = this.context.createGain();
 
+    noise.buffer = this.whiteNoise;
+    volume.gain.value = this.volume;
     volume.gain.linearRampToValueAtTime(0, this.context.currentTime + 0.75);
     noise.connect(volume).connect(this.context.destination);
     noise.start();

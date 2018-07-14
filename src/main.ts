@@ -1,4 +1,14 @@
-'use strict'
+import { loadAssets } from './lib/network'
+
+import Render from './lib/render'
+import Physics from './lib/physics'
+import Audio from './lib/audio'
+import Player from './level/player'
+import Asteroid from './level/asteroid'
+import Bullet from './level/bullet'
+import Alien from './level/alien'
+
+const BULLET_AGE = 2000;
 
 loadAssets.then(function (assets) {
 
@@ -18,12 +28,12 @@ loadAssets.then(function (assets) {
   bodies.push(player);
 
   // get rid of all these intervals
-  /* setInterval(() => {
-    if (paused || !player.started || player.dead)
-      return;
+  // setInterval(() => {
+  //   if (paused || !player.started || player.dead)
+  //     return;
 
-    alien.dead ? alien.dead = false : bodies.push(alien);
-  }, 10000); */
+  //   alien.dead ? alien.dead = false : bodies.push(alien);
+  // }, 10000);
 
   setInterval(() => paused || audio.beep(++pitch % 2 ? 440 : 220, 0.25), 2000);
   setInterval(() => blink = !blink, 1000);
@@ -125,12 +135,14 @@ loadAssets.then(function (assets) {
   document.querySelector('#pause').addEventListener('click', function (event) {
     event.preventDefault();
 
+    const target: HTMLAnchorElement = <HTMLAnchorElement>event.target;
+
     if (!paused) {
       paused = true;
-      event.target.innerText = 'Resume';
+      target.innerText = 'Resume';
     } else {
       paused = false;
-      event.target.innerText = 'Pause';
+      target.innerText = 'Pause';
       loop();
     }
   });
@@ -138,12 +150,14 @@ loadAssets.then(function (assets) {
   document.querySelector('#mute').addEventListener('click', function (event) {
     event.preventDefault();
 
+    const target: HTMLAnchorElement = <HTMLAnchorElement>event.target;
+
     if (!audio.muted) {
       audio.muted = true;
-      event.target.innerText = 'Unmute';
+      target.innerText = 'Unmute';
     } else {
       audio.muted = false;
-      event.target.innerText = 'Mute';
+      target.innerText = 'Mute';
     }
   });
 
