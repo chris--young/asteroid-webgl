@@ -25,7 +25,7 @@ loadAssets.then(function (assets) {
     alien.dead ? alien.dead = false : bodies.push(alien);
   }, 10000); */
 
-  setInterval(() => paused || audio.beep(++pitch % 2 ? 440 : 220, 250), 2000);
+  setInterval(() => paused || audio.beep(++pitch % 2 ? 440 : 220, 0.25), 2000);
   setInterval(() => blink = !blink, 1000);
   setInterval(() => blink_fast = !blink_fast, 250);
 
