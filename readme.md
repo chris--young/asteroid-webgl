@@ -17,11 +17,11 @@ Press ~ to toggle debug mode
 git clone https://github.com/chris--young/asteroids-webgl
 cd asteroids-webgl
 
-// install dependencies (requires Node.js 8)
+// install dependencies
 npm install
 
 // compile and start the server
 npm run dev
 ```
 
-Then open [http://127.0.0.1:8421](http://127.0.0.1:8421) in your favorite browser...
+Then open [http://127.0.0.1:8080](http://127.0.0.1:8080) in your web browser...
