@@ -1,12 +1,11 @@
 import Body from "../lib/body"
-import LA from "../lib/la"
-import { rotate } from "../lib/utils"
 import Wireframe from "../lib/wireframe"
 import Bullet from "./bullet"
 
-export default class Player implements Body {
+export default class Player extends Body {
 
-	model: number[][];
+	position: number[];
+	rotation: number;
 	velocity: number[];
 	wireframe: Wireframe;
 	lives: number;
@@ -17,18 +16,17 @@ export default class Player implements Body {
 	size: number;
 
 	constructor(wireframe: Wireframe) {
-		const model = rotate(Math.PI / 2);
-		const velocity = LA.Vector(Array)(2)();
+		const position = [0, 0];
+		const rotation = Math.PI / 2;
+		const velocity = [0, 0];
 
-		this.model = model;
-		this.velocity = velocity;
-		this.wireframe = wireframe;
+		super(position, rotation, velocity, wireframe);
+
 		this.lives = 3;
 		this.score = 0;
 		this.started = false;
 		this.dead = true;
 		this.spawning = false;
-		this.size = 1;
 	}
 
 	shoot(wireframe: Wireframe): Bullet {
@@ -43,24 +41,23 @@ export default class Player implements Body {
 		if (this.dead)
 			return;
 
-		const model = LA.Matrix(Array)(3)(this.model);
-
-		return new Bullet(model, wireframe);
+		return new Bullet(this.position, this.rotation, wireframe);
 	}
 
 	die(): void {
 		if (this.spawning || !this.started)
-		return;
+			return;
 
 		if (--this.lives <= 0)
-		return;
+			return;
 
 		setTimeout(this.respawn.bind(this), 1500);
 	}
 
 	respawn(): void {
-		this.model = rotate(Math.PI / 2);
-		this.velocity = LA.Vector(Array)(2)();
+		this.position = [0, 0];
+		this.rotation = Math.PI / 2;
+		this.velocity = [0, 0];
 		this.dead = false;
 		this.spawning = true;
 

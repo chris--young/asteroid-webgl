@@ -1,21 +1,15 @@
 {
     "compilerOptions": {
+        "alwaysStrict": true,
+        "lib": ["dom", "es2015"],
         "module": "amd",
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "outFile": "public/main.js",
         "removeComments": true,
         "sourceMap": true,
-        "outFile": "public/main.js",
-        "target": "es5",
-        "alwaysStrict": true,
-        "lib": [
-            "dom",
-            "es2015"
-        ]
+        "target": "es5"
     },
-    "compileOnSave": true,
-    "include": [
-        "src/**/*"
-    ],
-    "files": [
-        "src/main.ts"
-    ]
+    "files": ["src/main.ts"],
+    "include": ["src/**/*"]
 }

@@ -1,31 +1,27 @@
 import Body from "../lib/body"
-import LA from "../lib/la"
 import Wireframe from "../lib/wireframe"
 
 const BULLET_SPEED = 0.02;
 
-export default class Bullet implements Body {
+export default class Bullet extends Body {
 
-	model: number[][];
+	position: number[];
+	rotation: number;
 	velocity: number[];
 	wireframe: Wireframe;
 	size: number;
 	epoch: number;
 	dead: boolean;
 
-	constructor(model: number[][], wireframe: Wireframe) {
-		const a = Math.atan2(model[1][0], model[1][1]);
-		const x = Math.cos(a) * BULLET_SPEED;
-		const y = Math.sin(a) * BULLET_SPEED;
+	constructor(position: number[], rotation: number, wireframe: Wireframe) {
+		const x = Math.cos(rotation) * BULLET_SPEED;
+		const y = Math.sin(rotation) * BULLET_SPEED;
 
-		const velocity = LA.Vector(Array)(2)([x, y]);
+		const velocity = [x, y];
 
-		this.model = model;
-		this.velocity = velocity;
-		this.wireframe = wireframe;
-		this.size = 1;
+		super(position, rotation, velocity, wireframe);
+
 		this.epoch = Date.now();
-		this.dead = false;
 	}
 
 }

@@ -1,5 +1,5 @@
 import Body from "./body"
-import { flatten, scale, translate } from "./utils"
+import { flatten, scale } from "./utils"
 import Wireframe from "./wireframe"
 
 export default class Render {
@@ -87,32 +87,35 @@ export default class Render {
 			this.line(x, 0, Math.PI / 2, [0.25, 0.25, 0.25, 1]);
 	}
 
-	draw(wireframe: Wireframe, model: number[][]): void {
+	draw(wireframe: Wireframe, position: number[], rotation: number, size: number): void {
 		attribute(this.gl, this.program, "a_vertex", wireframe.shape, 2);
 		attribute(this.gl, this.program, "a_color", wireframe.color, 4);
 
-		uniform(this.gl, this.program, "u_model", flatten(model));
+		uniform(this.gl, this.program, "u_position", position);
+		uniform(this.gl, this.program, "u_rotation", rotation);
+		uniform(this.gl, this.program, "u_size", size);
+
+		// move this to resize?
 		uniform(this.gl, this.program, "u_view", flatten(this.aspectRatio));
 
 		this.gl.drawArrays(this.gl.LINE_STRIP, 0, wireframe.shape.length / 2);
 	}
 
 	drawBody(body: Body): void {
-		this.draw(body.wireframe, body.model);
+		this.draw(body.wireframe, body.position, body.rotation, body.size);
 
 		if (this.debug) {
-			this.polygon(body.wireframe.bounds, 8, body.model, [0, 1, 0, 1]);
+			this.polygon(body.wireframe.bounds, 8, body.position, body.rotation, [0, 1, 0, 1]);
 
-			const px = body.model[0][2];
-			const py = body.model[1][2];
+			const px = body.position[0];
+			const py = body.position[1];
 			const vx = body.velocity[0];
 			const vy = body.velocity[1];
-			const rx = body.model[0][1];
-			const ry = body.model[1][1];
 
 			this._text(px + 0.1, py - 0.1, `b ${body.wireframe.bounds}`);
 			this._text(px + 0.1, py - 0.2, `p { x: ${px.toFixed(3)}, y: ${py.toFixed(3)} }`);
 			this._text(px + 0.1, py - 0.3, `v { x: ${vx.toFixed(3)}, y: ${vy.toFixed(3)} }`);
+			this._text(px + 0.1, py - 0.4, `r ${body.rotation.toFixed(3)}`);
 		}
 	}
 
@@ -131,9 +134,11 @@ export default class Render {
 		this.canvas_2d.restore();
 	}
 
-	line(x: number, y: number, angle: number, color: number[]): void {
-		const c = Math.cos(angle) * this.ratio;
-		const s = Math.sin(angle);
+	line(x: number, y: number, rotation: number, color: number[]): void {
+		const position = [x, y];
+
+		const c = Math.cos(rotation) * this.ratio;
+		const s = Math.sin(rotation);
 
 		const wireframe: Wireframe = {
 			bounds: 0,
@@ -141,10 +146,12 @@ export default class Render {
 			shape: [-c, -s, c, s]
 		};
 
-		this.draw(wireframe, translate(x, y));
+		const size = 1;
+
+		this.draw(wireframe, position, rotation, size);
 	}
 
-	polygon(radius: number, sides: number, model: number[][], color: number[]): void {
+	polygon(radius: number, sides: number, position: number[], rotation: number, color: number[]): void {
 		const wireframe: Wireframe = {
 			bounds: 0,
 			color: [],
@@ -157,7 +164,9 @@ export default class Render {
 			wireframe.color = wireframe.color.concat(color);
 		}
 
-		this.draw(wireframe, model);
+		const size = 1;
+
+		this.draw(wireframe, position, rotation, size);
 	}
 
 	resize(): void {
@@ -229,8 +238,12 @@ function uniform(gl: WebGLRenderingContext, program: WebGLProgram, key: string, 
 	if (!location)
 		throw new Error(`Failed to get uniform location "${key}"`);
 
-	if (Array.isArray(value))
-		gl.uniformMatrix3fv(location, false, new Float32Array(value));
-	else
+	if (Array.isArray(value)) {
+		if (value.length === 2)
+			gl.uniform2fv(location, new Float32Array(value));
+		else
+			gl.uniformMatrix3fv(location, false, new Float32Array(value));
+	} else {
 		gl.uniform1f(location, value);
+	}
 }

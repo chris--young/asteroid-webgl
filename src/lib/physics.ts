@@ -1,7 +1,5 @@
 import Player from "../level/player"
 import Body from "./body"
-import LA from "./la"
-import { rotate, translate } from "./utils"
 
 const _360 = Math.PI * 2;
 const SPEED = 0.01;
@@ -11,7 +9,6 @@ const MIN = 0.001;
 const RIGHT_ARROW = 37;
 const LEFT_ARROW = 39;
 const UP_ARROW = 38;
-const SPACE_BAR = 91;
 
 export default class Physics {
 
@@ -39,43 +36,42 @@ export default class Physics {
 		this.ratio = this.width / this.height;
 	}
 
-	// why would you even do this? just use euler angles
 	update(body: Body): void {
 		if (body instanceof Player)
 			friction(body);
 
-		body.model = LA.multiply(translate(body.velocity[0], body.velocity[1]), body.model);
+		body.position[0] += body.velocity[0];
+		body.position[1] += body.velocity[1];
 
-		if (body.model[1][2] - body.wireframe.bounds > 1)
-			body.model = LA.multiply(translate(0, -2 - body.wireframe.bounds), body.model);
-		else if (body.model[1][2] + body.wireframe.bounds < -1)
-			body.model = LA.multiply(translate(0, 2 + body.wireframe.bounds), body.model);
+		if (body.position[1] - body.wireframe.bounds > 1)
+			body.position[1] -= 2 + body.wireframe.bounds;
+		else if (body.position[1] + body.wireframe.bounds < -1)
+			body.position[1] += 2 + body.wireframe.bounds;
 
-		if (body.model[0][2] - body.wireframe.bounds > this.ratio)
-			body.model = LA.multiply(translate(-this.ratio * 2 - body.wireframe.bounds, 0), body.model);
-		else if (body.model[0][2] + body.wireframe.bounds < -this.ratio)
-			body.model = LA.multiply(translate(this.ratio * 2 + body.wireframe.bounds, 0), body.model);
+		if (body.position[0] - body.wireframe.bounds > this.ratio)
+			body.position[0] -= this.ratio * 2 + body.wireframe.bounds;
+		else if (body.position[0] + body.wireframe.bounds < -this.ratio)
+			body.position[0] += this.ratio * 2 + body.wireframe.bounds;
 	}
 
 	control(body: Body): void {
 		if (this.input[RIGHT_ARROW])
-			body.model = LA.multiply(body.model, rotate(ROTATION));
+			body.rotation += ROTATION;
 
 		if (this.input[LEFT_ARROW])
-			body.model = LA.multiply(body.model, rotate(-ROTATION));
+			body.rotation -= ROTATION;
 
 		if (this.input[UP_ARROW]) {
-			const a = Math.atan2(body.model[1][0], body.model[1][1]);
-			const x = Math.cos(a) * SPEED;
-			const y = Math.sin(a) * SPEED;
+			const x = Math.cos(body.rotation) * SPEED;
+			const y = Math.sin(body.rotation) * SPEED;
 
-			body.velocity = LA.Vector(Array)(3)([x, y, 0]);
+			body.velocity = [x, y, 0];
 		}
 	}
 
 	static collision(body1: Body, body2: Body): boolean {
-		const a = body1.model[0][2] - body2.model[0][2];
-		const b = body1.model[1][2] - body2.model[1][2];
+		const a = body1.position[0] - body2.position[0];
+		const b = body1.position[1] - body2.position[1];
 
 		const distance = Math.sqrt(Math.pow(a, 2) +  Math.pow(b, 2));
 		const bounds = body1.wireframe.bounds * body1.size + body2.wireframe.bounds * body2.size;
@@ -104,8 +100,10 @@ function friction(body: Body): void {
 	const x = Math.abs(body.velocity[0]);
 	const y = Math.abs(body.velocity[1]);
 
-	if (x > 0 || y > 0)
-		body.velocity = LA.scale(body.velocity, DRAG);
+	if (x > 0 || y > 0) {
+		body.velocity[0] *= DRAG;
+		body.velocity[1] *= DRAG;
+	}
 
 	if (x < MIN)
 		body.velocity[0] = 0;

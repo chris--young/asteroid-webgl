@@ -15,6 +15,8 @@ loadAssets.then(function main(assets): void {
 	const physics = new Physics(render.canvas.game);
 	const audio = new Audio();
 
+	audio.muted = true;
+
 	const player = new Player(assets.wireframes.player);
 	// let alien = new Alien(assets.wireframes.alien);
 
