@@ -1,9 +1,12 @@
 import Body from "../lib/body"
 import Physics from "../lib/physics"
-import { between, random } from "../lib/utils"
 import Wireframe from "../lib/wireframe"
 
 const ASTEROID_MAX_SPEED = 0.01;
+
+export const flip = (): boolean => Math.random() < 0.5;
+export const between = (min: number, max: number): number => Math.random() * (max - min + 1) + min;
+export const random = (abs: number): number => flip() ? Math.random() * abs : Math.random() * -abs;
 
 export default class Asteroid extends Body {
 
@@ -18,7 +21,7 @@ export default class Asteroid extends Body {
 	constructor(wireframes: Wireframe[], physics: Physics, size: number) {
 		const i = between(0, wireframes.length - 1) | 0;
 
-		let x = random(physics.ratio);
+		let x = random(physics.aspect_ratio);
 		let y = random(1);
 
 		const position = [x, y];

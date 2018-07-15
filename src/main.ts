@@ -3,22 +3,24 @@ import Asteroid from "./level/asteroid"
 import Bullet from "./level/bullet"
 import Player from "./level/player"
 import Audio from "./lib/audio"
-import { loadAssets } from "./lib/network"
+import { fetch_shaders } from "./lib/network"
 import Physics from "./lib/physics"
 import Render from "./lib/render"
+import wireframes from "./wireframes"
 
 const BULLET_AGE = 2000;
 
-loadAssets.then(function main(assets): void {
+(async function main(): Promise<void> {
+	const shaders = await fetch_shaders();
 
-	const render = new Render(assets.shaders.vertex, assets.shaders.fragment);
+	const render = new Render(shaders.vertex, shaders.fragment);
 	const physics = new Physics(render.canvas.game);
 	const audio = new Audio();
 
 	audio.muted = true;
 
-	const player = new Player(assets.wireframes.player);
-	// let alien = new Alien(assets.wireframes.alien);
+	const player = new Player(wireframes.player);
+	// let alien = new Alien(wireframes.alien);
 
 	let bodies = [];
 	let paused = false;
@@ -41,7 +43,7 @@ loadAssets.then(function main(assets): void {
 	setInterval(() => blink_fast = !blink_fast, 250);
 
 	for (let x = 0; x < 8; x++)
-		bodies.push(new Asteroid(assets.wireframes.asteroids, physics, 1));
+		bodies.push(new Asteroid(wireframes.asteroids, physics, 1));
 
 	function loop(): void {
 		render.clear();
@@ -127,7 +129,7 @@ loadAssets.then(function main(assets): void {
 			return;
 		}
 
-		const bullet = player.shoot(assets.wireframes.bullet);
+		const bullet = player.shoot(wireframes.bullet);
 
 		if (bullet) {
 			bodies.push(bullet);
@@ -164,4 +166,4 @@ loadAssets.then(function main(assets): void {
 		}
 	});
 
-});
+})();

@@ -16,7 +16,7 @@ export default class Physics {
 	input: object;
 	width: number;
 	height: number;
-	ratio: number;
+	aspect_ratio: number;
 
 	constructor(canvas: HTMLCanvasElement) {
 		this.canvas = canvas;
@@ -33,7 +33,7 @@ export default class Physics {
 	resize(): void {
 		this.width = this.canvas.clientWidth;
 		this.height = this.canvas.clientHeight;
-		this.ratio = this.width / this.height;
+		this.aspect_ratio = this.width / this.height;
 	}
 
 	update(body: Body): void {
@@ -48,10 +48,10 @@ export default class Physics {
 		else if (body.position[1] + body.wireframe.bounds < -1)
 			body.position[1] += 2 + body.wireframe.bounds;
 
-		if (body.position[0] - body.wireframe.bounds > this.ratio)
-			body.position[0] -= this.ratio * 2 + body.wireframe.bounds;
-		else if (body.position[0] + body.wireframe.bounds < -this.ratio)
-			body.position[0] += this.ratio * 2 + body.wireframe.bounds;
+		if (body.position[0] - body.wireframe.bounds > this.aspect_ratio)
+			body.position[0] -= this.aspect_ratio * 2 + body.wireframe.bounds;
+		else if (body.position[0] + body.wireframe.bounds < -this.aspect_ratio)
+			body.position[0] += this.aspect_ratio * 2 + body.wireframe.bounds;
 	}
 
 	control(body: Body): void {

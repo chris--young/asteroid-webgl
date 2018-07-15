@@ -1,12 +1,11 @@
-const ASSETS = ["shaders/fragment.glsl", "shaders/vertex.glsl", "wireframes.json"];
+export async function fetch_shaders() {
+	const sources = await Promise.all([get("shaders/fragment.glsl"), get("shaders/vertex.glsl")]);
 
-export const loadAssets = Promise.all(ASSETS.map(get)).then((assets) => ({
-	shaders: {
-		fragment: assets[0],
-		vertex: assets[1]
-	},
-	wireframes: assets[2]
-}));
+	return {
+		fragment: sources[0],
+		vertex: sources[1]
+	};
+}
 
 async function get(url: string) {
 	const res = await fetch(url);

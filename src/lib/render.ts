@@ -1,5 +1,4 @@
 import Body from "./body"
-import { flatten, scale } from "./utils"
 import Wireframe from "./wireframe"
 
 export default class Render {
@@ -19,8 +18,7 @@ export default class Render {
 	canvas_2d: CanvasRenderingContext2D;
 	debug: boolean;
 	program: WebGLProgram;
-	ratio: number;
-	aspectRatio: number[][];
+	aspect_ratio: number;
 
 	constructor(vertex: string, fragment: string) {
 		this.canvas = {
@@ -40,7 +38,7 @@ export default class Render {
 		};
 
 		if (!this.gl || !this.canvas_2d)
-		throw new Error("Unsupported browser");
+			throw new Error("Unsupported browser");
 
 		const shaders = [
 			compile(this.gl, this.gl.VERTEX_SHADER, vertex),
@@ -83,20 +81,20 @@ export default class Render {
 		for (let y = -1; y < 1; y += 0.1)
 			this.line(0, y, Math.PI, [0.25, 0.25, 0.25, 1]);
 
-		for (let x = -this.ratio; x < this.ratio; x += 0.1)
+		for (let x = -this.aspect_ratio; x < this.aspect_ratio; x += 0.1)
 			this.line(x, 0, Math.PI / 2, [0.25, 0.25, 0.25, 1]);
 	}
 
 	draw(wireframe: Wireframe, position: number[], rotation: number, size: number): void {
 		attribute(this.gl, this.program, "a_vertex", wireframe.shape, 2);
-		attribute(this.gl, this.program, "a_color", wireframe.color, 4);
 
+		uniform(this.gl, this.program, "u_color", wireframe.color);
 		uniform(this.gl, this.program, "u_position", position);
 		uniform(this.gl, this.program, "u_rotation", rotation);
 		uniform(this.gl, this.program, "u_size", size);
 
 		// move this to resize?
-		uniform(this.gl, this.program, "u_view", flatten(this.aspectRatio));
+		uniform(this.gl, this.program, "u_aspect_ratio", this.aspect_ratio);
 
 		this.gl.drawArrays(this.gl.LINE_STRIP, 0, wireframe.shape.length / 2);
 	}
@@ -130,14 +128,14 @@ export default class Render {
 
 		this.canvas_2d.fillStyle = color || "#0f0";
 		this.canvas_2d.translate(w - (m.width / 2), h);
-		this.canvas_2d.fillText(text, (x * w / this.ratio), y * -h);
+		this.canvas_2d.fillText(text, (x * w / this.aspect_ratio), y * -h);
 		this.canvas_2d.restore();
 	}
 
 	line(x: number, y: number, rotation: number, color: number[]): void {
 		const position = [x, y];
 
-		const c = Math.cos(rotation) * this.ratio;
+		const c = Math.cos(rotation) * this.aspect_ratio;
 		const s = Math.sin(rotation);
 
 		const wireframe: Wireframe = {
@@ -175,8 +173,7 @@ export default class Render {
 
 		this.gl.viewport(0, 0, this.canvas.game.clientWidth, this.canvas.game.clientHeight);
 
-		this.ratio = this.canvas.game.clientWidth / this.canvas.game.clientHeight;
-		this.aspectRatio = scale(1 / (this.ratio), 1);
+		this.aspect_ratio = this.canvas.game.clientWidth / this.canvas.game.clientHeight;
 	}
 
 	fullscreen(): void {
@@ -239,10 +236,16 @@ function uniform(gl: WebGLRenderingContext, program: WebGLProgram, key: string, 
 		throw new Error(`Failed to get uniform location "${key}"`);
 
 	if (Array.isArray(value)) {
-		if (value.length === 2)
-			gl.uniform2fv(location, new Float32Array(value));
-		else
-			gl.uniformMatrix3fv(location, false, new Float32Array(value));
+		switch (value.length) {
+			case 2:
+				gl.uniform2fv(location, new Float32Array(value));
+				break;
+			case 4:
+				gl.uniform4fv(location, new Float32Array(value));
+				break;
+			default:
+				gl.uniformMatrix3fv(location, false, new Float32Array(value));
+		}
 	} else {
 		gl.uniform1f(location, value);
 	}
