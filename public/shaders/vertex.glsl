@@ -1,6 +1,7 @@
 attribute vec2 a_vertex;
 
 uniform vec2 u_position;
+
 uniform float u_aspect_ratio;
 uniform float u_rotation;
 uniform float u_size;

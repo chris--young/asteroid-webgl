@@ -1,6 +1,5 @@
 import Wireframe from "./wireframe"
 
-// use an abstract class instead?
 export default abstract class Body {
 
 	position: number[];

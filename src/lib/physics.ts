@@ -10,6 +10,22 @@ const RIGHT_ARROW = 37;
 const LEFT_ARROW = 39;
 const UP_ARROW = 38;
 
+function friction(body: Body): void {
+	const x = Math.abs(body.velocity[0]);
+	const y = Math.abs(body.velocity[1]);
+
+	if (x > 0 || y > 0) {
+		body.velocity[0] *= DRAG;
+		body.velocity[1] *= DRAG;
+	}
+
+	if (x < MIN)
+		body.velocity[0] = 0;
+
+	if (y < MIN)
+		body.velocity[1] = 0;
+}
+
 export default class Physics {
 
 	canvas: HTMLCanvasElement;
@@ -94,20 +110,4 @@ export default class Physics {
 		return true;
 	}
 
-}
-
-function friction(body: Body): void {
-	const x = Math.abs(body.velocity[0]);
-	const y = Math.abs(body.velocity[1]);
-
-	if (x > 0 || y > 0) {
-		body.velocity[0] *= DRAG;
-		body.velocity[1] *= DRAG;
-	}
-
-	if (x < MIN)
-		body.velocity[0] = 0;
-
-	if (y < MIN)
-		body.velocity[1] = 0;
 }
